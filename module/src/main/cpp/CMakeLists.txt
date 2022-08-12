@@ -42,5 +42,8 @@ find_package(riru REQUIRED CONFIG)
 find_package(nativehelper REQUIRED CONFIG)
 
 add_library(${MODULE_NAME} SHARED main.cpp)
+add_library(${MODULE_NAME}-tensor SHARED tensor.cpp)
 target_link_libraries(${MODULE_NAME} log riru::riru nativehelper::nativehelper_header_only)
 set_target_properties(${MODULE_NAME} PROPERTIES LINK_FLAGS_RELEASE -s)
+target_link_libraries(${MODULE_NAME}-tensor log riru::riru nativehelper::nativehelper_header_only)
+set_target_properties(${MODULE_NAME}-tensor PROPERTIES LINK_FLAGS_RELEASE -s)

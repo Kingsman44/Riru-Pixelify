@@ -1,4 +1,3 @@
-## PIXELIFY MAGISK MODULE
+## PIXELIFY RIRU LIB
 
-Enables Pixel Ui and Some Exclusive Features.
-Ported to Riru version. Read more: https://github.com/Kingsman44/Pixelify
+Thanks to @HuskyDG porting Zygisk lib to riru

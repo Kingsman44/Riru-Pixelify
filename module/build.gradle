@@ -59,59 +59,20 @@ afterEvaluate {
         task("prepareMagiskFiles${variantCapped}") {
             dependsOn("assemble$variantCapped")
 
-            doFirst {
-                delete { delete magiskDir }
-
-                copy {
-                    from "$rootDir/template/magisk_module"
-                    into magiskDir.path
-                    exclude 'riru.sh'
-                }
-
-                copy {
-                    from "$rootDir/template/magisk_module"
-                    into magiskDir.path
-                    include 'riru.sh'
-                    filter { line ->
-                        def replaced = line.replaceAll('%%%RIRU_MODULE_API_VERSION%%%', moduleRiruApiVersion.toString())
-                                .replaceAll('%%%RIRU_MODULE_MIN_API_VERSION%%%', moduleMinRiruApiVersion.toString())
-                                .replaceAll('%%%RIRU_MODULE_MIN_RIRU_VERSION_NAME%%%', moduleMinRiruVersionName)
-                        if (moduleMinRiruApiVersion >= 24) {
-                            replaced.replaceAll('%%%RIRU_MODULE_LIB_NAME%%%', moduleLibraryName)
-                        } else {
-                            replaced.replaceAll('%%%RIRU_MODULE_LIB_NAME%%%', moduleLibraryName)
-                                    .replaceAll('%%%RIRU_MODULE_ID_PRE24%%%', moduleLibraryName.substring("riru_".length()))
-                        }
-                    }
-                    filter(FixCrLfFilter.class,
-                            eol: FixCrLfFilter.CrLf.newInstance("lf"))
-                }
-
-                def moduleProp = [
-                        id         : magiskModuleId,
-                        name       : moduleName,
-                        version    : moduleVersion,
-                        versionCode: moduleVersionCode.toString(),
-                        author     : moduleAuthor,
-                        description: moduleDescription,
-                ]
-
-                def modulePropText = ""
-                moduleProp.each { k, v -> modulePropText += "$k=$v\n" }
-                modulePropText = modulePropText.trim()
-                file("$magiskDir/module.prop").text = modulePropText
-            }
-
             def nativeOutDir = file("build/intermediates/cmake/$variant.name/obj")
 
-            doLast {
+            doFirst {
                 copy {
                     from "$nativeOutDir"
-                    into "$magiskDir/lib"
-                    exclude "**/*.txt"
+                    into "$magiskDir/lib/riru"
+                    exclude "**/*.txt" , "**/libpixelify-tensor.so"
                 }
-
-                
+                copy {
+                    from "$nativeOutDir"
+                    into "$magiskDir/lib/riru-tensor"
+                    exclude "**/*.txt" , "**/libpixelify.so"
+                    rename "libpixelify-tensor.so" , "libpixelify.so"
+                }
             }
         }
 
