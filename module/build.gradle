@@ -69,7 +69,7 @@ afterEvaluate {
                 }
                 copy {
                     from "$nativeOutDir"
-                    into "$magiskDir/lib/riru-tensor"
+                    into "$magiskDir/lib/riru_tensor"
                     exclude "**/*.txt" , "**/libpixelify.so"
                     rename "libpixelify-tensor.so" , "libpixelify.so"
                 }
