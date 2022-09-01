@@ -13,8 +13,7 @@
 #include "nativehelper/scoped_utf_chars.h"
 #include "android_filesystem_config.h"
 
-static std::vector<std::string> PkgList = {"com.google", "com.android.chrome", "com.android.vending", "com.breel.wallpapers20"};
-static std::vector<std::string> P6 = {"com.snapchat.android"};
+static std::vector<std::string> PkgList = {"com.google", "com.android.chrome", "com.android.vending", "com.breel.wallpapers20","com.snapchat.android"};
 static std::vector<std::string> P5 = {"com.google.android.tts", "com.google.android.gms", "com.google.android.apps.wearables.maestro.companion"};
 static std::vector<std::string> P1 = {"com.google.android.apps.photos"};
 static std::vector<std::string> keep = {"com.google.android.GoogleCamera", "com.google.ar.core", "com.google.vr.apps.ornament", "com.google.android.youtube", "com.google.android.apps.motionsense.bridge", "com.google.android.systemui", "com.google.android.settings.intelligence", "com.google.android.xx"};
@@ -116,14 +115,6 @@ static void preSpecialize(const char *process, JNIEnv *env)
             break;
         }
     }
-    for (auto &s : P6)
-    {
-        if (package_name.find(s) != std::string::npos)
-        {
-            type = 4;
-            break;
-        }
-    }
     for (auto &s : P5)
     {
         if (package_name.find(s) != std::string::npos)
@@ -157,23 +148,19 @@ static void preSpecialize(const char *process, JNIEnv *env)
     }
 
     if (strcmp(process, "com.google.android.apps.camera.services") == 0)
-        type = 4;
+        type = 1;
 
     if (type == 1)
     {
-        injectBuild(process, "Pixel 6a", "bluejay", "google/bluejay/bluejay:12/SD2A.220601.003.B1/8836721:user/release-keys", env);
+        injectBuild(process, "Pixel 6 Pro", "raven", "google/raven/raven:13/TP1A.220624.021/8877034:user/release-keys", env);
     }
     else if (type == 2)
     {
-        injectBuild(process, "Pixel 5", "bluejay", "google/bluejay/bluejay:12/SD2A.220601.003.B1/8836721:user/release-keys", env);
+        injectBuild(process, "Pixel 5", "raven", "google/raven/raven:13/TP1A.220624.021/8877034:user/release-keys", env);
     }
     else if (type == 3)
     {
         injectBuild(process, "Pixel XL", "marlin", "google/marlin/marlin:10/QP1A.191005.007.A3/5972272:user/release-keys", env);
-    }
-    else if (type == 4)
-    {
-        injectBuild(process, "Pixel 6 Pro", "raven", "google/raven/raven:12/SQ3A.220705.004/8836240:user/release-keys", env);
     }
 }
 
