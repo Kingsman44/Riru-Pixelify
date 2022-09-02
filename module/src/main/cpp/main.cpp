@@ -177,7 +177,7 @@ static void preSpecialize(const char *process, JNIEnv *env)
     {
         injectBuild(process, "Pixel XL", "marlin", "google/marlin/marlin:10/QP1A.191005.007.A3/5972272:user/release-keys","google","Google", env);
     } else {
-        injectBuild(process, OMODEL, ODEVICE, OFP, OBRAND, OMANU, env); 
+        injectBuild(process, "", "", "", "", "", env); 
     }
 }
 
