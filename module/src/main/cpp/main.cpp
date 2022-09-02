@@ -13,14 +13,21 @@
 #include "nativehelper/scoped_utf_chars.h"
 #include "android_filesystem_config.h"
 
+#include <sys/system_properties.h>
+
 static std::vector<std::string> PkgList = {"com.google", "com.android.chrome", "com.android.vending", "com.breel.wallpapers20","com.snapchat.android"};
 static std::vector<std::string> P5 = {"com.google.android.tts", "com.google.android.gms", "com.google.android.apps.wearables.maestro.companion"};
 static std::vector<std::string> P1 = {"com.google.android.apps.photos"};
 static std::vector<std::string> keep = {"com.google.android.GoogleCamera", "com.google.ar.core", "com.google.vr.apps.ornament", "com.google.android.youtube", "com.google.android.apps.motionsense.bridge", "com.google.android.systemui", "com.google.android.settings.intelligence", "com.google.android.xx"};
 
 bool DEBUG = false;
+char* OFP = new char [1024];
+char* OMODEL = new char [1024];
+char* ODEVICE = new char [1024];
+char* OMANU = new char [1024];
+char* OBRAND = new char [1024];
 
-void injectBuild(const char *package_name, const char *model1, const char *product1, const char *finger1, JNIEnv *env)
+void injectBuild(const char *package_name, const char *model1, const char *product1, const char *finger1, const char *brand1, const char *man1, JNIEnv *env)
 {
     if (env == nullptr)
     {
@@ -41,8 +48,8 @@ void injectBuild(const char *package_name, const char *model1, const char *produ
 
     jstring product = env->NewStringUTF(product1);
     jstring model = env->NewStringUTF(model1);
-    jstring brand = env->NewStringUTF("google");
-    jstring manufacturer = env->NewStringUTF("Google");
+    jstring brand = env->NewStringUTF(brand1);
+    jstring manufacturer = env->NewStringUTF(man1);
     jstring finger = env->NewStringUTF(finger1);
 
     if ((strcmp(model1, "") != 0) && (strcmp(model1, "") != 0))
@@ -107,6 +114,13 @@ static void preSpecialize(const char *process, JNIEnv *env)
 {
     std::string package_name = process;
     int type = 0;
+    
+    __system_property_get("ro.build.fingerprint", OFP);
+    __system_property_get("ro.product.model", OMODEL);
+    __system_property_get("ro.product.device", ODEVICE);
+    __system_property_get("ro.product.manufacturer", OMANU);
+    __system_property_get("ro.build.brand", OBRAND);
+    
     for (auto &s : PkgList)
     {
         if (package_name.find(s) != std::string::npos)
@@ -143,24 +157,27 @@ static void preSpecialize(const char *process, JNIEnv *env)
 
     if (strcmp(process, "com.google.android.gms:unstable") == 0 || strcmp(process, "com.google.android.gms.unstable") == 0)
     {
-        injectBuild(process, "", "", "google/marlin/marlin:7.1.2/NJH47F/4146041:user/release-keys", env);
+        injectBuild(process, "", "", "google/marlin/marlin:7.1.2/NJH47F/4146041:user/release-keys","","", env);
         type = 0;
     }
 
-    if (strcmp(process, "com.google.android.apps.camera.services") == 0)
+    if (strcmp(process, "com.google.android.apps.camera.services") == 0) {
         type = 1;
+    }
 
     if (type == 1)
     {
-        injectBuild(process, "Pixel 6 Pro", "raven", "google/raven/raven:13/TP1A.220624.021/8877034:user/release-keys", env);
+        injectBuild(process, "Pixel 6 Pro", "raven", "google/raven/raven:13/TP1A.220624.021/8877034:user/release-keys","google","Google", env);
     }
     else if (type == 2)
     {
-        injectBuild(process, "Pixel 5", "raven", "google/raven/raven:13/TP1A.220624.021/8877034:user/release-keys", env);
+        injectBuild(process, "Pixel 5", "raven", "google/raven/raven:13/TP1A.220624.021/8877034:user/release-keys","google","Google", env);
     }
     else if (type == 3)
     {
-        injectBuild(process, "Pixel XL", "marlin", "google/marlin/marlin:10/QP1A.191005.007.A3/5972272:user/release-keys", env);
+        injectBuild(process, "Pixel XL", "marlin", "google/marlin/marlin:10/QP1A.191005.007.A3/5972272:user/release-keys","google","Google", env);
+    } else {
+        injectBuild(process, OMODEL, ODEVICE, OFP, OBRAND, OMANU, env); 
     }
 }
 
